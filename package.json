@@ -1,0 +1,59 @@
+{
+  "name": "@testrigor/playwright-plugin",
+  "version": "0.1.0",
+  "description": "testRigor Playwright integration — gRPC-backed locators, commands, and self-healing",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:manual": "vitest run --config vitest.config.manual.ts",
+    "test:manual:one": "vitest run --config vitest.config.manual.ts -t test_find_by_user_description",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . && npm run typecheck",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run lint && npm run format:check && npm run build && npm test"
+  },
+  "keywords": [
+    "playwright",
+    "testrigor",
+    "testing",
+    "automation"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.6",
+    "@grpc/proto-loader": "^0.7.13",
+    "protobufjs": "^7.6.4",
+    "playwright": ">=1.40.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.2",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "playwright": ">=1.40.0"
+  }
+}
