@@ -1,0 +1,11 @@
+# optional: direct to different grpc
+# testrigor.grpc.uri=<testrigor-cloud-grpc-host>
+# testrigor.grpc.port=443
+# optional: force TLS on/off; omit to match port (TLS for 443 only)
+# testrigor.grpc.use-tls=true
+
+# Required for manual gRPC integration tests:
+testrigor.apiToken=replace-with-your-api-token
+
+playwright.browser=chromium
+playwright.headless=false
