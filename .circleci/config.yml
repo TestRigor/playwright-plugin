@@ -1,0 +1,71 @@
+version: 2.1
+
+executors:
+  deployment:
+    docker:
+      # npm 11.11.0+ required for CircleCI OIDC (npm/cli#8925).
+      - image: cimg/node:24.4
+jobs:
+  pack:
+    executor: deployment
+    steps:
+      - checkout
+      - run:
+          name: Install npm
+          command: sudo npm install -g npm@11.11.0
+      - run:
+          name: npm install and build
+          command: |
+            npm install
+            npm run build
+      - run:
+          name: Create package tarball
+          command: |
+            mkdir -p artifacts
+            npm pack --pack-destination artifacts
+      - store_artifacts:
+          path: ./artifacts
+          destination: tarball
+
+  publish:
+    executor: deployment
+    steps:
+      - checkout
+      - run:
+          name: Install npm (CircleCI OIDC)
+          command: sudo npm install -g npm@11.11.0
+      - run:
+          name: npm install and build
+          command: |
+            npm install
+            npm run build
+      - run:
+          name: Publish to npm (trusted publishing / OIDC)
+          command: |
+            set -euo pipefail
+            # Fork PRs emit github.com/<user>/… in OIDC; npm trusted publisher is TestRigor/playwright-plugin.
+            if [[ "${CIRCLE_REPOSITORY_URL:-}" != *"TestRigor/playwright-plugin"* ]]; then
+              echo "Publish must run from TestRigor/playwright-plugin (not a fork)." >&2
+              exit 1
+            fi
+            export NPM_ID_TOKEN
+            NPM_ID_TOKEN="$(circleci run oidc get --claims '{"aud":"npm:registry.npmjs.org"}' | tr -d '\r\n')"
+            if [ -z "$NPM_ID_TOKEN" ]; then
+              echo "Empty NPM_ID_TOKEN — enable OIDC on the project and trusted publisher on npm." >&2
+              exit 1
+            fi
+            export NPM_CONFIG_PROVENANCE=false
+            env -u NODE_AUTH_TOKEN -u NPM_AUTH_TOKEN -u NPM_TOKEN \
+              npx --yes npm@11.11.0 publish --tag beta --registry https://registry.npmjs.org/
+
+workflows:
+  version: 2
+  publish:
+    jobs:
+      - pack
+      - publish:
+          requires:
+            - pack
+          filters:
+            branches:
+              only: main
