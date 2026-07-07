@@ -1,12 +1,19 @@
-# @testrigor/playwright-plugin
+testrigor/playwright-plugin
 
 Playwright integration for the testRigor cloud extension — natural-language locators, fluent commands, and self-healing.
-
 ## Install
 
+Requires **Node.js >= 18**. `playwright` is a peer dependency, so install it alongside the plugin:
+
 ```bash
-npm install @testrigor/playwright-plugin playwright
+npm i @testrigor/playwright-plugin
 npx playwright install chromium
+```
+
+Then import it in your project:
+
+```typescript
+import { TestRigor } from '@testrigor/playwright-plugin';
 ```
 
 ## Quick start
@@ -18,7 +25,7 @@ const driver = await TestRigor.createBrowserPage(process.env.TESTRIGOR_API_TOKEN
 driver.setTestContext('my_test');
 
 await driver.get('https://example.com');
-const button = await driver.findElement(TestRigor.byUserDescription('Sign in'));
+const button = await driver.findElement(TestRigor.byUserDescription('Learn more'));
 await button.click();
 
 await driver.quit();
@@ -49,40 +56,18 @@ const value = await queries(driver).grabValue('Some field');
 
 ## Configuration
 
-Environment variables:
+The only setting you need to provide is your testRigor personal API token.
 
-| Variable                        | Default                            |
-| ------------------------------- | ---------------------------------- |
-| `TESTRIGOR_API_TOKEN`           | none - must be provided            |
-| `TESTRIGOR_GRPC_URI`            | `selenium-extension.testrigor.com` |
-| `TESTRIGOR_GRPC_PORT`           | `443`                              |
-| `TESTRIGOR_GRPC_USE_TLS`        | auto (TLS enabled for port 443)    |
-| `TESTRIGOR_PLAYWRIGHT_BROWSER`  | `chromium`                         |
-| `TESTRIGOR_PLAYWRIGHT_HEADLESS` | `false`                            |
+| Variable                        | Default    | Description               |
+| ------------------------------- | -----------| ------------------------- |
+| `TESTRIGOR_API_TOKEN`           |            | Your testRigor API token. |
+| `TESTRIGOR_PLAYWRIGHT_BROWSER`  | `chromium` |                           |
+| `TESTRIGOR_PLAYWRIGHT_HEADLESS` | `false`    |                           |
 
-Manual integration tests load settings from `tests/resources/application.properties` (copy from `application.properties.example`). Override the path with `CONFIG_FILE` or `config.file`.
+The token is **not** read automatically by the library — pass it explicitly to `createBrowserPage` / `extendPage`:
 
-The API token is **not** read automatically by the library — pass it to `createBrowserPage` / `extendPage`, or set `testrigor.apiToken` / `TESTRIGOR_API_TOKEN` for manual tests only.
+```typescript
+import { TestRigor } from '@testrigor/playwright-plugin';
 
-## Development
-
-```bash
-npm install
-npm run check          # lint + format + build + unit tests
-npm run test:manual    # live gRPC integration tests (requires service + config)
-npm run test:manual:one  # single manual test by name (-t flag)
-```
-
-## Layout
-
-```
-src/
-  application/     Extension service, gRPC connection, driver
-  protocol/        Remote driver commands → Playwright
-  elements/        Element registry and wrappers
-  locators/        Locators and self-healing finder
-  session/         Browser launch and page wrapping
-  commons/         gRPC client, command facades, shared types
-  testrigor.ts     Public entry point
-tests/manual/      Live gRPC integration tests
+const driver = await TestRigor.createBrowserPage(process.env.TESTRIGOR_API_TOKEN!);
 ```

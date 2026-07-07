@@ -1,7 +1,7 @@
 {
   "name": "@testrigor/playwright-plugin",
-  "version": "0.1.0",
-  "description": "testRigor Playwright integration — gRPC-backed locators, commands, and self-healing",
+  "version": "0.2.0",
+  "description": "testRigor Playwright plugin",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,29 +25,47 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run lint && npm run format:check && npm run build && npm test"
+    "check": "npm run lint && npm run format:check && npm run build && npm test",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
     "playwright",
     "testrigor",
     "testing",
-    "automation"
+    "automation",
+    "self-healing",
+    "locators",
+    "e2e"
   ],
   "license": "MIT",
+  "author": "testRigor",
+  "homepage": "https://github.com/TestRigor/playwright-plugin#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TestRigor/playwright-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TestRigor/playwright-plugin/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
+    "11": "^0.0.1",
     "@grpc/grpc-js": "^1.12.6",
     "@grpc/proto-loader": "^0.7.13",
-    "protobufjs": "^7.6.4",
-    "playwright": ">=1.40.0"
+    "protobufjs": "^7.6.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/node": "^22.10.0",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
+    "playwright": ">=1.40.0",
     "prettier": "^3.4.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.2",
@@ -55,5 +73,8 @@
   },
   "peerDependencies": {
     "playwright": ">=1.40.0"
+  },
+  "directories": {
+    "test": "tests"
   }
 }
